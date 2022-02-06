@@ -1,6 +1,18 @@
 
 ### Enable ssh
 After flashing the image, run following under "/Volumes/boot"
+Prepare your WIFI config file "wpa_supplicant.conf"
+```
+country=us
+update_config=1
+ctrl_interface=/var/run/wpa_supplicant
+
+network={
+ scan_ssid=1
+ ssid="<ssid>"
+ psk="<password>"
+}
+```
 ```
 ./prepare-sdcard.sh
 ```
