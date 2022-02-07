@@ -1,6 +1,9 @@
 #!/bin/bash
 host_name=$1
 
+sudo sed -i 's/# en_US.UTF-8/en_US.UTF-8/g' /etc/locale.gen
+sudo locale-gen
+
 if [ -z "$host_name" ]; then
     host_name="k8s-node"
 fi

@@ -27,5 +27,6 @@ https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#4-install
 https://microk8s.io/
 https://wiki.archlinux.org/title/avahi
 https://ubuntu.com/tutorials/install-a-local-kubernetes-with-microk8s#3-enable-addons
-
-https://k3s.io/
+https://rancher.com/docs/k3s/latest/en/quick-start/
+https://rancher.com/docs/k3s/latest/en/networking/
+https://ikarus.sg/kubernetes-with-k3s/
