@@ -11,3 +11,4 @@ cp install-nfs.sh /Volumes/boot
 cp install-k3s.sh /Volumes/boot
 cp install-torrent.sh /Volumes/boot
 cp install-microk8s.sh /Volumes/boot
+cp install-wifi-bridge.sh /Volumes/boot
