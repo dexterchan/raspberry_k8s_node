@@ -14,13 +14,21 @@ network={
 }
 ```
 ```
-./prepare-sdcard.sh
+./0_prepare-sdcard.sh
 ```
 
 ### Prepare the "Soup-base" for the K8s node with raspberry
 ```
-./soup-base.setup.sh
+./1_soup-base.setup.sh
 ```
+
+### Setup the wifi AP
+```
+./0_prepare-sdcard.sh
+cp install-wifiap.sh /Volumes/boot
+cp wifi5g_config.conf /Volumes/boot
+```
+
 
 # Reference
 https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#4-installing-microk8s
@@ -30,3 +38,5 @@ https://ubuntu.com/tutorials/install-a-local-kubernetes-with-microk8s#3-enable-a
 https://rancher.com/docs/k3s/latest/en/quick-start/
 https://rancher.com/docs/k3s/latest/en/networking/
 https://ikarus.sg/kubernetes-with-k3s/
+
+https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/
