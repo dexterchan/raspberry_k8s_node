@@ -41,8 +41,8 @@ sudo rfkill unblock wlan
 
 
 #Configure WIFI /etc/hostapd/hostapd.conf
-#sudo cp /boot/wifi5g_config.conf /tmp/hostapd.conf
-sudo cp /boot/wifi2g_config.conf /tmp/hostapd.conf
+#sudo cp /boot/wifi2g_config.conf /tmp/hostapd.conf
+sudo cp /boot/wifi5g_config2.conf /tmp/hostapd.conf
 sudo chown pi:pi /tmp/hostapd.conf
 sed -i "s|<ssid_to_be_replaced>|${SSID}|g" /tmp/hostapd.conf
 sed -i "s|<pwd_to_be_replaced>|${SSID_PWD}|g" /tmp/hostapd.conf
