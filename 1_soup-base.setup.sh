@@ -29,6 +29,6 @@ sudo usermod -aG docker ${USER}
 sudo snap install core
 
 #Amend /etc/avahi/avahi-daemon.conf
-
+echo 'alias temp="vcgencmd measure_temp"' >> ~/.bashrc 
 
 sudo sed -i 's/#host-name=foo/host-name='${host_name}'/g' /etc/avahi/avahi-daemon.conf

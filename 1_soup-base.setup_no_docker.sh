@@ -21,6 +21,6 @@ sudo apt install -y ufw avahi-daemon curl
 
 cd /tmp
 curl -fsSL https://get.docker.com -o get-docker.sh
-
+echo 'alias temp="vcgencmd measure_temp"' >> ~/.bashrc 
 #Amend /etc/avahi/avahi-daemon.conf
 sudo sed -i 's/#host-name=foo/host-name='${host_name}'/g' /etc/avahi/avahi-daemon.conf
