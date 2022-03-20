@@ -49,3 +49,5 @@ sudo chown -R pi:pi /home/pi/.config/transmission-daemon/
 sudo systemctl start transmission-daemon
 
 echo "access with http://<IPADDRESS>:9091"
+
+sudo ufw allow from 192.168.1.0/24 proto tcp to any port 9091

@@ -24,3 +24,9 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 echo 'alias temp="vcgencmd measure_temp"' >> ~/.bashrc 
 #Amend /etc/avahi/avahi-daemon.conf
 sudo sed -i 's/#host-name=foo/host-name='${host_name}'/g' /etc/avahi/avahi-daemon.conf
+
+
+sudo update-alternatives --set iptables  /usr/sbin/iptables-nft
+echo "Reboot and allow below commands:"
+echo sudo ufw allow from 192.168.1.0/24 proto tcp to any port 22
+echo sudo ufw --force enable 
