@@ -28,5 +28,7 @@ sudo sed -i 's/#host-name=foo/host-name='${host_name}'/g' /etc/avahi/avahi-daemo
 
 sudo update-alternatives --set iptables  /usr/sbin/iptables-nft
 echo "Reboot and allow below commands:"
+
+echo sudo ufw --force default deny incoming
 echo sudo ufw allow from 192.168.1.0/24 proto tcp to any port 22
 echo sudo ufw --force enable 
