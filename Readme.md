@@ -40,3 +40,4 @@ https://rancher.com/docs/k3s/latest/en/networking/
 https://ikarus.sg/kubernetes-with-k3s/
 
 https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/
+
