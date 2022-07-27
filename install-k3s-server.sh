@@ -18,8 +18,8 @@ sudo apt-get install -y helm
 conn_str=$(sudo sh postgredb.connection_string.sh)
 SECRET=$(date +%s | sha256sum | base64 | head -c 32 )
 echo off
-echo $SECRET | sudo tee /media/boot/k3s_secret_token
-SECRET=$(cat /media/boot/k3s_secret_token)
+echo $SECRET | sudo tee /boot/k3s_secret_token
+SECRET=$(cat /boot/k3s_secret_token)
 K3S_VERSION=v1.23.9+k3s1
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--no-deploy traefik --cluster-cidr=172.16.0.0/16" sh -s - server \
   --token=$SECRET \
@@ -40,9 +40,9 @@ k3s kubectl get node
 
 k3s_grp=k3s
 sudo groupadd --system   ${k3s_grp}
-sudo usermod -a -G ${k3s_grp} odroid
+sudo usermod -a -G ${k3s_grp} pi
 
-sudo usermod -a -G ${k3s_grp} droid
+sudo usermod -a -G ${k3s_grp} pi
 sudo chgrp ${k3s_grp} /etc/rancher/k3s/k3s.yaml
 sudo chmod 660 /etc/rancher/k3s/k3s.yaml
 #Without this, you got Error: Kubernetes cluster unreachable
