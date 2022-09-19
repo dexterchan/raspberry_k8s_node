@@ -19,7 +19,9 @@ cp install-microk8s.sh /Volumes/boot
 cp install-wifi-bridge.sh /Volumes/boot
 cp install-vpn-client.sh /Volumes/boot
 cp install-ssmagent.sh /Volumes/boot
+cp install_swap_drive.sh /Volumes/boot
 cp ~/.ssh/postgredb.connection_string.sh /Volumes/boot
 pushd aws_cli_sys_mgr
 sh Create_Activation_Code.sh 
 cp /tmp/activation.json /Volumes/boot
+ 

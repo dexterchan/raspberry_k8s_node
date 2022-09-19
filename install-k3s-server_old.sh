@@ -1,5 +1,5 @@
 #!/bin/sh
-# reference: https://github.com/k3s-io/k3s/releases
+
 #unblock the ports in firewall
 # sudo ufw allow from 192.168.1.0/24 proto tcp to any port 6443
 # sudo ufw allow from 192.168.1.0/24 proto udp to any port 8472
@@ -42,7 +42,7 @@ k3s_grp=k3s
 sudo groupadd --system   ${k3s_grp}
 sudo usermod -a -G ${k3s_grp} pi
 
-sudo usermod -a -G ${k3s_grp} droid
+sudo usermod -a -G ${k3s_grp} pi
 sudo chgrp ${k3s_grp} /etc/rancher/k3s/k3s.yaml
 sudo chmod 660 /etc/rancher/k3s/k3s.yaml
 #Without this, you got Error: Kubernetes cluster unreachable
@@ -56,13 +56,19 @@ export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 #https://github.com/kubernetes-csi/csi-driver-smb/blob/master/deploy/example/e2e_usage.md
 echo uninstall with '/usr/local/bin/k3s-uninstall.sh'
 
-
+# nginx controller replacement
+# https://kubernetes.github.io/ingress-nginx/deploy/
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
   
 # opening port for ingress
 # sudo ufw allow from 192.168.1.0/24 proto tcp to any port 80
 # sudo ufw allow from 192.168.1.0/24 proto tcp to any port 443
 
 kubectl label nodes $(hostname) type=driver
+kubectl taint nodes $(hostname) node-role.kubernetes.io/control-plane:NoSchedule
+
 #An example NGINX Ingress that makes use of the controller:
 #   apiVersion: networking.k8s.io/v1
 #   kind: Ingress
@@ -100,22 +106,4 @@ kubectl label nodes $(hostname) type=driver
 #     tls.key: <base64 encoded key>
 #   type: kubernetes.io/tls
 
-# Turn on the calico
-# # As of 14SEP22, calico is not stable with NFS Persistent storage pod
-# # ref: https://projectcalico.docs.tigera.io/getting-started/kubernetes/flannel/flannel#installing-with-the-kubernetes-api-datastore-recommended
-# wget -O /tmp/canal_org.yaml https://docs.projectcalico.org/manifests/canal.yaml 
-# #Seem having problem with below POD_CIDR
-# #POD_CIDR=$(kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}')
-# POD_CIDR="172.16.0.0/16"
-# sed \
-# -e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' \
-# -e 's|            #   value: \"192.168.0.0/16\"|              value: \"'${POD_CIDR}'\"|g' /tmp/canal_org.yaml > /tmp/canal.yaml 
-# sudo cp /tmp/canal.yaml /var/lib/rancher/k3s/server/manifests/ 
 
-# nginx controller replacement
-# https://kubernetes.github.io/ingress-nginx/deploy/
-helm upgrade --install ingress-nginx ingress-nginx \
-  --repo https://kubernetes.github.io/ingress-nginx \
-  --namespace ingress-nginx --create-namespace
-
-kubectl taint nodes $(hostname) node-role.kubernetes.io/control-plane:NoSchedule
