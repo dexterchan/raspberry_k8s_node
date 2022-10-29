@@ -18,12 +18,13 @@ sudo apt-get install -y helm
 conn_str=$(sudo sh postgredb.connection_string.sh)
 SECRET=$(date +%s | sha256sum | base64 | head -c 32 )
 echo off
-echo $SECRET | sudo tee /boot/k3s_secret_token
-SECRET=$(cat /boot/k3s_secret_token)
-K3S_VERSION=v1.23.9+k3s1
+echo $SECRET | sudo tee /media/boot/k3s_secret_token
+SECRET=$(cat /media/boot/k3s_secret_token)
+K3S_VERSION=v1.24.7+k3s1
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--no-deploy traefik --cluster-cidr=172.16.0.0/16" sh -s - server \
   --token=$SECRET \
-  --datastore-endpoint="${conn_str}"
+  -cluster-init 
+  #--datastore-endpoint="${conn_str}"
 
 echo on
 
@@ -40,7 +41,7 @@ k3s kubectl get node
 
 k3s_grp=k3s
 sudo groupadd --system   ${k3s_grp}
-sudo usermod -a -G ${k3s_grp} pi
+sudo usermod -a -G ${k3s_grp} odroid
 
 sudo usermod -a -G ${k3s_grp} droid
 sudo chgrp ${k3s_grp} /etc/rancher/k3s/k3s.yaml
@@ -63,6 +64,7 @@ echo uninstall with '/usr/local/bin/k3s-uninstall.sh'
 # sudo ufw allow from 192.168.1.0/24 proto tcp to any port 443
 
 kubectl label nodes $(hostname) type=driver
+
 #An example NGINX Ingress that makes use of the controller:
 #   apiVersion: networking.k8s.io/v1
 #   kind: Ingress
@@ -101,16 +103,16 @@ kubectl label nodes $(hostname) type=driver
 #   type: kubernetes.io/tls
 
 # Turn on the calico
-# # As of 14SEP22, calico is not stable with NFS Persistent storage pod
+# # As of 14SEP22, calico seem not stable with NFS Persistent storage pod
 # # ref: https://projectcalico.docs.tigera.io/getting-started/kubernetes/flannel/flannel#installing-with-the-kubernetes-api-datastore-recommended
-# wget -O /tmp/canal_org.yaml https://docs.projectcalico.org/manifests/canal.yaml 
+wget -O /tmp/canal_org.yaml https://docs.projectcalico.org/manifests/canal.yaml 
 # #Seem having problem with below POD_CIDR
 # #POD_CIDR=$(kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}')
-# POD_CIDR="172.16.0.0/16"
-# sed \
-# -e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' \
-# -e 's|            #   value: \"192.168.0.0/16\"|              value: \"'${POD_CIDR}'\"|g' /tmp/canal_org.yaml > /tmp/canal.yaml 
-# sudo cp /tmp/canal.yaml /var/lib/rancher/k3s/server/manifests/ 
+POD_CIDR="172.16.0.0/16"
+sed \
+-e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' \
+-e 's|            #   value: \"192.168.0.0/16\"|              value: \"'${POD_CIDR}'\"|g' /tmp/canal_org.yaml > /tmp/canal.yaml 
+kubectl apply -f /tmp/canal.yaml
 
 # nginx controller replacement
 # https://kubernetes.github.io/ingress-nginx/deploy/
