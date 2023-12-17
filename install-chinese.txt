@@ -1,0 +1,7 @@
+
+
+terminal
+sudo apt-get install fcitx
+sudo apt-get install fcitx-table-cangjie5 fcitx-table-quick5
+sudo apt-get install scim scim-tables-zh
+reboot
