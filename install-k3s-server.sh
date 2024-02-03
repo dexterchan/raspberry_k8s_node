@@ -8,18 +8,18 @@
 
 
 sudo apt-get install -y curl
-curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
-sudo apt-get install -y apt-transport-https
-echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-sudo apt-get update -y
-sudo apt-get install -y helm
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
 
 
 conn_str=$(sudo sh postgredb.connection_string.sh)
 SECRET=$(date +%s | sha256sum | base64 | head -c 32 )
 echo off
-echo $SECRET | sudo tee /media/boot/k3s_secret_token
-SECRET=$(cat /media/boot/k3s_secret_token)
+echo $SECRET | sudo tee /boot/k3s_secret_token
+SECRET=$(cat /boot/k3s_secret_token)
 K3S_VERSION=v1.24.7+k3s1
 curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--no-deploy traefik --cluster-cidr=172.16.0.0/16" sh -s - server \
   --token=$SECRET \
@@ -102,17 +102,17 @@ kubectl label nodes $(hostname) type=driver
 #     tls.key: <base64 encoded key>
 #   type: kubernetes.io/tls
 
-# Turn on the calico
-# # As of 14SEP22, calico seem not stable with NFS Persistent storage pod
-# # ref: https://projectcalico.docs.tigera.io/getting-started/kubernetes/flannel/flannel#installing-with-the-kubernetes-api-datastore-recommended
-wget -O /tmp/canal_org.yaml https://docs.projectcalico.org/manifests/canal.yaml 
-# #Seem having problem with below POD_CIDR
-# #POD_CIDR=$(kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}')
-POD_CIDR="172.16.0.0/16"
-sed \
--e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' \
--e 's|            #   value: \"192.168.0.0/16\"|              value: \"'${POD_CIDR}'\"|g' /tmp/canal_org.yaml > /tmp/canal.yaml 
-kubectl apply -f /tmp/canal.yaml
+# # Turn on the calico
+# # # as of 3NOV22, calico exhausted memory resource to 1.5GB in each node. It left little memory to run actual job.
+# # # ref: https://projectcalico.docs.tigera.io/getting-started/kubernetes/flannel/flannel#installing-with-the-kubernetes-api-datastore-recommended
+# wget -O /tmp/canal_org.yaml https://docs.projectcalico.org/manifests/canal.yaml 
+# # #Seem having problem with below POD_CIDR
+# # #POD_CIDR=$(kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}')
+# POD_CIDR="172.16.0.0/16"
+# sed \
+# -e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' \
+# -e 's|            #   value: \"192.168.0.0/16\"|              value: \"'${POD_CIDR}'\"|g' /tmp/canal_org.yaml > /tmp/canal.yaml 
+# kubectl apply -f /tmp/canal.yaml
 
 # nginx controller replacement
 # https://kubernetes.github.io/ingress-nginx/deploy/
