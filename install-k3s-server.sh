@@ -20,12 +20,12 @@ SECRET=$(date +%s | sha256sum | base64 | head -c 32 )
 echo off
 echo $SECRET | sudo tee /boot/k3s_secret_token
 SECRET=$(cat /boot/k3s_secret_token)
-K3S_VERSION=v1.24.7+k3s1
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--no-deploy traefik --cluster-cidr=172.16.0.0/16" sh -s - server \
-  --token=$SECRET \
+K3S_VERSION=v1.28.6+k3s2
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" K3S_KUBECONFIG_MODE="644"  sh -s - server --disable=traefik \
+  --token=$SECRET  \
   -cluster-init 
   #--datastore-endpoint="${conn_str}"
-
+sudo mv  /var/lib/rancher/k3s/server/manifests/traefik.yaml /var/lib/rancher/k3s/server/manifests/traefik.yaml.skip
 echo on
 
 
